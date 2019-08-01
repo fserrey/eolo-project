@@ -1,2 +1,2 @@
 # eolo-project
-Wind power plant prediction by using Machine Learning
+Wind power plant prediction using machine learning
