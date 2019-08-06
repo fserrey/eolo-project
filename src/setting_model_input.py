@@ -13,10 +13,9 @@ data_dictionary = loading(file_path) # All files and variables loaded as diction
 list_var = ["Vel100m"]
 
 var_to_test = get_var(data_dictionary, list_var, nz=5)
-print(type(var_to_test))
-
 
 print("Setting X...")
+print(type(var_to_test))
 
 meteo = setting_X(var_to_test)
 

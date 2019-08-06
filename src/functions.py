@@ -99,6 +99,7 @@ def loading(file_path):
 def get_var(main_dic, list_var, nz=26):
     """This function provides the selected variables in a nested dictionary with the given array
     and level (consider that each level is around 50m heigth). Output is given as dictionary
+    :rtype: object
     """
     dict_final = {}
     size_3d = 13*9*nz
@@ -135,9 +136,8 @@ def get_var(main_dic, list_var, nz=26):
 
 
 def setting_X(dictionary):
-    meteo_df = pd.DataFrame(var_to_test).T
+    meteo_df = pd.DataFrame(dictionary).T
     meteo_df.reset_index(level=0, inplace=True)
-
     meteo_df["date"]=pd.to_datetime(meteo_df['index'], format='%d/%m/%Y %H:%M')
     meteo_df=meteo_df.sort_values(by='date',ascending=True)
     meteo_df=meteo_df.set_index("date").sort_index().loc[:'31/12/2016 00:00']
