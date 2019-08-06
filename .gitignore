@@ -73,6 +73,7 @@ target/
 
 # Jupyter Notebook
 .ipynb_checkpoints
+1.0-initial-data-exploration.ipynb
 
 # pyenv
 .python-version
@@ -93,7 +94,7 @@ env.bak/
 venv.bak/
 .idea
 *.gra
-
+*.pickle
 # Spyder project settings
 .spyderproject
 .spyproject
@@ -106,3 +107,5 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+*.pickle
