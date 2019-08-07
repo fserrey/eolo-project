@@ -5,6 +5,7 @@ import numpy as np
 import pandas as pd
 from datetime import datetime, timedelta
 import json
+import xgboost as xgb
 
 
 
@@ -153,3 +154,24 @@ def setting_y(csv_file):
     power_df=power_df.set_index("date").sort_index().loc[:'31/12/2016 00:00']
 
     return power_df
+
+
+def objetivo(space):
+    clf = xgb.XGBRegressor(n_estimators =int(space['n_estimators']),
+                           learning_rate = space['learning_rate'],
+                           max_depth = int(space['max_depth']),
+                           min_child_weight = space['min_child_weight'],
+                           subsample = space['subsample'],
+                           gamma = space['gamma'],
+                           reg_lambda = space['reg_lambda'],
+                           objective='reg:squarederror')
+
+    eval_set=[(X_train, y_train), (X_test, y_test)]
+
+    clf.fit(X_train, y_train,
+            eval_set=eval_set, eval_metric="rmse", verbose=False)
+
+    y_pred = clf.predict(X_test)
+    rmse = mean_squared_error(y_test, y_pred)**(0.5)
+
+    return {'loss':rmse, 'status': STATUS_OK }
