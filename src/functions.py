@@ -1,13 +1,14 @@
 
 import os
+from os import listdir
 
 import numpy as np
 import pandas as pd
 from datetime import datetime, timedelta
 import json
 import xgboost as xgb
-
-
+import matplotlib as plt
+import folium
 
 def loading(file_path):
     """
@@ -126,6 +127,17 @@ def get_var(main_dic, list_var, nz=26):
 
     return dict_final
 
+def get_X(dataframe):
+
+    meteo = dataframe
+    meteo.reset_index(level=0, inplace=True)
+    meteo["date"] = pd.to_datetime(meteo['index'], format='%d/%m/%Y %H:%M')
+    meteo = meteo.sort_values(by='date',ascending=True)
+    meteo = meteo.set_index("date").sort_index().loc[:'31/12/2016 00:00']
+    meteo = meteo[[x for x in meteo.columns if x != 'index']]
+
+    return meteo
+
 
 #names = ['date','data']
 #formats = ['f8','f8']
@@ -154,6 +166,7 @@ def setting_y(csv_file):
     power_df=power_df.set_index("date").sort_index().loc[:'31/12/2016 00:00']
 
     return power_df
+
 
 
 def objetivo(space):
@@ -197,9 +210,89 @@ def get_vvel(base_dir):
     content = []
     filenames = []
     filenames.append(get_date(base_dir))
-    for file in listdir(base_dir):
+    for file in os.listdir(base_dir):
         file_path = f'{base_dir}/{file}'
         filenames.append(file)
         content.append(np.fromfile(file_path, dtype=np.float32)[21762:21879])
 
     return pd.DataFrame(data=content)
+
+# Graphical
+
+
+def plotting_feature_importance(importance, model):
+    """Plot the feature importances of the forest"""
+    std = np.std([modelo.feature_importances_ for modelo in model.estimators_],
+                 axis=0)
+    index = np.argsort(feten)
+    plt.figure(figsize=(15, 15))
+    plt.title("Feature importances")
+    plt.barh(range(X_train.values.shape[1]), feten[index],
+           color="r", xerr=std[index], align="center")
+
+    plt.yticks(range(X_train.values.shape[1]), index)
+    plt.ylim([-1, X_train.values.shape[1]])
+    return plt.show()
+
+
+def estimate_coord_plot(feten):
+    lon_res = 13
+    lat_res = 9
+    nz = 26
+
+    lat_step = 0.5
+    lon_step = 0.5
+
+    lat_start = 44
+    lat_end = lat_start + lat_step  * (lat_res - 1) # calculas lat final
+    lon_start = -123
+    lon_end = lon_start + lon_step * (lon_res -1)  # calculas lon final - con esto puedes construir mesh
+
+    lat = np.linspace(start=lat_start, stop=lat_end, endpoint=lat_end, num=lat_res)
+    lon = np.linspace(start=lon_start, stop=lon_end, endpoint=lon_end, num=lon_res) #
+    lon, lat = np.meshgrid(lon, lat)
+    Z = feten.reshape(lat_res, lon_res)
+    ptos = np.hstack((lat.reshape((lat.size,1)), lon.reshape((lon.size,1))))
+    fig = plt.figure(figsize=(12, 10))
+    im = plt.pcolormesh(lat, lon, Z) # Asignas valores a su posición en el mapa
+    return plt.colorbar(mappable=im)
+
+def get_location(feten):
+    lon_res = 13
+    lat_res = 9
+    nz = 26
+
+    lat_step = 0.5
+    lon_step = 0.5
+
+    lat_start = 44
+    lat_end = lat_start + lat_step  * (lat_res - 1) # calculas lat final
+    lon_start = -123
+    lon_end = lon_start + lon_step * (lon_res -1)  # calculas lon final - con esto puedes construir mesh
+
+    lat = np.linspace(start=lat_start, stop=lat_end, endpoint=lat_end, num=lat_res)
+    lon = np.linspace(start=lon_start, stop=lon_end, endpoint=lon_end, num=lon_res)
+    lon, lat = np.meshgrid(lon, lat)
+    Z = feten.reshape(lat_res, lon_res)
+    point = Z.argmax()
+
+    ptos = np.hstack((lat.reshape((lat.size,1)), lon.reshape((lon.size,1))))
+    max_z_position = Z.argmax()
+    coordinates = list(ptos[point])
+    return coordinates
+
+def drawing_map(result_point, radio=False, distance=False):
+    m = folium.Map(
+        location=[(lat_start + lat_end) / 2, (lon_start + lon_end) / 2, ],
+        zoom_start=7,
+        tiles='Stamen Terrain'
+    )
+
+    tooltip = 'I am here!'
+    if radio == True | distance == True:
+        folium.CircleMarker(location = [45.58163, -120.15285], radius = 100, popup = ' FRI ').add_to(m)
+        folium.PolyLine(locations = [(result_point), (45.18163, -120.15285)], line_opacity = 0.5).add_to(m)
+        folium.Marker([45.18163, -120.15285], popup='<b>Condon WindFarm</b>', tooltip=tooltip).add_to(m)
+    folium.Marker(result_point, popup='<i>Result</i>', tooltip=tooltip).add_to(m)
+
+    return m
