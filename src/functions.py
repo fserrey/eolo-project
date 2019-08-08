@@ -175,3 +175,31 @@ def objetivo(space):
     rmse = mean_squared_error(y_test, y_pred)**(0.5)
 
     return {'loss':rmse, 'status': STATUS_OK }
+
+
+def get_date(base_dir):
+    new_time = []
+    for file in listdir(base_dir):
+        file_path = f'{base_dir}/{file}'
+        match=file.split("_")[1]
+        date = pd.to_datetime(match, format = "%Y%m%d%H").strftime('%d/%m/%Y')
+        time = (datetime.strptime(match, "%Y%m%d%H") + timedelta(hours=6)).strftime('%H:%M')
+        new_time.append(date + " " + time)
+    return new_time
+
+        #for i in range(len(main_dic.keys())):
+    #dict_final.update({datetime_key:content})
+    # VEL -- [21762:21879]
+
+def get_vvel(base_dir):
+    """This function gives you the values of all Velocity at 100m height as pandas data frame
+    """
+    content = []
+    filenames = []
+    filenames.append(get_date(base_dir))
+    for file in listdir(base_dir):
+        file_path = f'{base_dir}/{file}'
+        filenames.append(file)
+        content.append(np.fromfile(file_path, dtype=np.float32)[21762:21879])
+
+    return pd.DataFrame(data=content)

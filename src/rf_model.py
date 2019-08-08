@@ -1,8 +1,6 @@
 import pandas as pd
-
 from sklearn.model_selection import train_test_split
 from src.functions import loading, get_var, setting_X, setting_y
-
 from sklearn.ensemble import RandomForestRegressor
 
 file_path = "/home/slimbook/git-repos/eolo-project/data/.raw/GFS_data"
