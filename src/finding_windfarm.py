@@ -12,7 +12,7 @@ from sklearn.ensemble import RandomForestRegressor
 from src.functions import *
 import webbrowser
 
-
+print("Reading the data...")
 base_dir = '/home/slimbook/git-repos/eolo-project/data/.raw/GFS_data'
 csv_path = ("/home/slimbook/git-repos/eolo-project/data/processed/power_data.csv")
 
@@ -20,13 +20,13 @@ csv_path = ("/home/slimbook/git-repos/eolo-project/data/processed/power_data.csv
 df_data = get_vvel(base_dir)
 dates = get_date(base_dir)
 df_data.index = dates
-
+print("We are almost ready to train!")
 meteo = get_X(df_data)
 power = setting_y(csv_path)
 
 train = pd.concat([power, meteo], axis=1, join="inner")
 train.sort_index(ascending=True, inplace=True)
-
+print("Let's find that wind farm")
 X = train[[x for x in train.columns if x != 'Production']]
 y = pd.DataFrame(train["Production"])
 
@@ -43,7 +43,7 @@ prediction =model.predict(X_test)
 feten = model.feature_importances_
 
 ############################################
-
+print("Let's see where it is...")
 lon_res = 13
 lat_res = 9
 nz = 26
@@ -70,12 +70,12 @@ coordinates = list(ptos[point])
 ###########################################
 m = folium.Map(
         location=[(lat_start + lat_end) / 2, (lon_start + lon_end) / 2, ],
-        zoom_start=7,
+        zoom_start=10,
         tiles='Stamen Terrain'
     )
 
 tooltip = 'I am here!'
-folium.CircleMarker(location = [45.58163, -120.15285], radius = 100, popup = ' FRI ').add_to(m)
+#folium.CircleMarker(location = [45.58163, -120.15285], radius = 100, popup = ' FRI ').add_to(m)
 #    folium.PolyLine(locations = [(result_point), (45.18163, -120.15285)], line_opacity = 0.5).add_to(m)
 folium.Marker([45.18163, -120.15285], popup='<b>Condon WindFarm</b>', tooltip=tooltip).add_to(m)
 folium.Marker(coordinates, popup='<i>Result</i>', tooltip=tooltip).add_to(m)
