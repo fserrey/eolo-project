@@ -10,6 +10,7 @@ from sklearn.model_selection import train_test_split
 from src.functions import loading, get_var, setting_X, setting_y
 from sklearn.ensemble import RandomForestRegressor
 from src.functions import *
+import webbrowser
 
 
 base_dir = '/home/slimbook/git-repos/eolo-project/data/.raw/GFS_data'
@@ -42,11 +43,46 @@ prediction =model.predict(X_test)
 feten = model.feature_importances_
 
 ############################################
-print(feten)
 
-#plotting_feature_importance(feten, model)
+lon_res = 13
+lat_res = 9
+nz = 26
 
-#estimate_coord(feten) # Plotting where is max relationship between features
-                      # As we are relating wind speed and power generated, we try to estimate where is the park
+lat_step = 0.5
+lon_step = 0.5
+lat_start = 44
+lon_start = -123
+
+lat_end = lat_start + lat_step  * (lat_res - 1)
+lon_end = lon_start + lon_step * (lon_res -1)
+
+lat = np.linspace(start=lat_start, stop=lat_end, endpoint=lat_end, num=lat_res)
+lon = np.linspace(start=lon_start, stop=lon_end, endpoint=lon_end, num=lon_res)
+lon, lat = np.meshgrid(lon, lat)
+Z = feten.reshape(lat_res, lon_res)
+point = Z.argmax()
+
+ptos = np.hstack((lat.reshape((lat.size,1)), lon.reshape((lon.size,1))))
+
+coordinates = list(ptos[point])
+
+###########################################
+###########################################
+m = folium.Map(
+        location=[(lat_start + lat_end) / 2, (lon_start + lon_end) / 2, ],
+        zoom_start=7,
+        tiles='Stamen Terrain'
+    )
+
+tooltip = 'I am here!'
+folium.CircleMarker(location = [45.58163, -120.15285], radius = 100, popup = ' FRI ').add_to(m)
+#    folium.PolyLine(locations = [(result_point), (45.18163, -120.15285)], line_opacity = 0.5).add_to(m)
+folium.Marker([45.18163, -120.15285], popup='<b>Condon WindFarm</b>', tooltip=tooltip).add_to(m)
+folium.Marker(coordinates, popup='<i>Result</i>', tooltip=tooltip).add_to(m)
 
 
+filepath = '/home/slimbook/git-repos/eolo-project/data/map.html'
+
+m.save(filepath)
+
+webbrowser.open('file://' + filepath)
