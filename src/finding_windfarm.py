@@ -10,6 +10,8 @@ from sklearn.model_selection import train_test_split
 from src.functions import loading, get_var, setting_X, setting_y
 from sklearn.ensemble import RandomForestRegressor
 from src.functions import *
+import pickle
+from src.pickle_save_load import to_pickle
 import webbrowser
 
 print("Reading the data...")
@@ -34,9 +36,22 @@ y = pd.DataFrame(train["Production"])
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state=42)
 
-model = RandomForestRegressor(n_estimators=1000)
-trained = model.fit(X_train.values, y_train.values[:,0])
-prediction =model.predict(X_test)
+model_rf = RandomForestRegressor(n_estimators=1000)
+trained = model_rf.fit(X_train.values, y_train.values[:,0])
+#####################SAVING MODEL###############################
+
+
+with open('/home/slimbook/git-repos/eolo-project/src', 'wb') as f:
+    pickle.dump(model_rf, f)
+
+
+# in your prediction file
+
+with open('/home/slimbook/git-repos/eolo-project/src', 'rb') as f:
+    model = pickle.load(f)
+##############################################################
+
+prediction = model.predict(X_test)
 
 #model_saved = model.save("rf_model.h5")
 
