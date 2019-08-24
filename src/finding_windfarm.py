@@ -41,21 +41,20 @@ trained = model_rf.fit(X_train.values, y_train.values[:,0])
 #####################SAVING MODEL###############################
 
 
-with open('/home/slimbook/git-repos/eolo-project/src', 'wb') as f:
-    pickle.dump(model_rf, f)
-
+#with open('/home/slimbook/git-repos/eolo-project/src', 'wb') as f:
+#    pickle.dump(model_rf, f)
 
 # in your prediction file
 
-with open('/home/slimbook/git-repos/eolo-project/src', 'rb') as f:
-    model = pickle.load(f)
+#with open('/home/slimbook/git-repos/eolo-project/src', 'rb') as f:
+#    model = pickle.load(f)
 ##############################################################
 
-prediction = model.predict(X_test)
+prediction = model_rf.predict(X_test)
 
 #model_saved = model.save("rf_model.h5")
 
-feten = model.feature_importances_
+feten = model_rf.feature_importances_
 
 ############################################
 print("Let's see where it is...")
@@ -92,7 +91,7 @@ m = folium.Map(
 tooltip = 'I am here!'
 #folium.CircleMarker(location = [45.58163, -120.15285], radius = 100, popup = ' FRI ').add_to(m)
 #    folium.PolyLine(locations = [(result_point), (45.18163, -120.15285)], line_opacity = 0.5).add_to(m)
-folium.Marker([45.18163, -120.15285], popup='<b>Condon WindFarm</b>', tooltip=tooltip).add_to(m)
+folium.Marker([45.18163, -120.15285], popup='<b>Condon WindFarm</b>', tooltip='Condon WindFarm').add_to(m)
 folium.Marker(coordinates, popup='<i>Result</i>', tooltip=tooltip).add_to(m)
 
 
