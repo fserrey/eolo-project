@@ -8,6 +8,8 @@ This project aims to detect the relation between several types of data features 
 
 The current project it is under final assesment framwork of the Ironhack academic program for the Data Analytics Bootcamp.
 
+![Geopotential Height representation](https://github.com/fserrey/eolo-project/blob/master/images/HGTprs_3D_variable.png)
+
 ## Data
 **Meteorological predictions**
 The Global Forecast System (GFS) is a weather forecast model produced by the [National Centers for Environmental Prediction (NCEP)](ftp://nomads.ncdc.noaa.gov/). Dozens of atmospheric and land-soil variables are available through this dataset, from temperatures, winds, and precipitation to soil moisture and atmospheric ozone concentration. The entire globe is covered by the GFS at a base horizontal resolution of 18 miles (28 kilometers) between grid points
@@ -44,7 +46,6 @@ The data were structured in more than 4K arrays-format-files (.gra) holding info
 | SPFH2m    | 1 | 2 m above ground Specific Humidity [kg/kg]                                      |
 | SPFH80m   | 1 | 80 m above ground Specific Humidity [kg/kg]                                     |
 
-<INSERT IMAGE OF VARIABLE REPRESENTATION>
 
 All the variables are included on each file. Therefore, an extraction and posterior organisation of the data were needed before employing the model. 
 
@@ -59,7 +60,7 @@ This repository have several components in order to make everyone easier the tas
 ### src
 The folder that contains two of the main files, one that keeps all the functions used for this project and the one that actually locates and represent it on a map.
 
-<INSERT MAP CAPTION>
+![Location result](https://github.com/fserrey/eolo-project/blob/master/images/map_screenshot.png)
 
 ### notebooks
 This folder contains the data cleaning of the power dataset and some other experiments made previous to build the code at src.
