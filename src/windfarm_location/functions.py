@@ -1,7 +1,6 @@
 
 import os
 from os import listdir
-
 import numpy as np
 import pandas as pd
 from datetime import datetime, timedelta
@@ -74,12 +73,12 @@ def loading(file_path):
         size_3d = 13*9*26
         array_3d = array[:size_3d*7]
         for variable, length in zip(features_3d.keys(), range(len(features_3d))):
-            features_3d[variable]["data"] = array_3d[length*size_3d:(length +1)*size_3d]#.reshape((len(features_3d.keys()), corte))
+            features_3d[variable]["data"] = array_3d[length*size_3d:(length +1)*size_3d]
 
         size_2d = 13*9
         array_2d = array[size_3d*7:]
         for variable, length in zip(features_2d.keys(), range(len(features_2d))):
-            features_2d[variable]["data"] = array_2d[length*size_2d:(length +1)*size_2d]#.reshape((len(features_2d.keys()), corte))
+            features_2d[variable]["data"] = array_2d[length*size_2d:(length +1)*size_2d]
 
 
 
@@ -106,9 +105,9 @@ def get_var(main_dic, list_var, nz=26):
     dict_final = {}
     size_3d = 13*9*nz
     print("Now, we get the variables we want")
-    for datetime_key in main_dic: #Quiero iterar sobre las keys de 1º nivel
+    for datetime_key in main_dic: # iteración sobre las keys de 1º nivel
         res = []
-        for var in list_var:  # compruebo que la variable que voy a sacar está en mi lista
+        for var in list_var:  # compruebo que la variable que saco está en mi lista
             if var in main_dic.get(datetime_key).get("var_3d").keys():
                  # compruebo que esa variable está en las de 2º nivel
                 array_3d = main_dic[datetime_key]["var_3d"][var]["data"]
@@ -137,14 +136,6 @@ def get_X(dataframe):
     meteo = meteo[[x for x in meteo.columns if x != 'index']]
 
     return meteo
-
-
-#names = ['date','data']
-#formats = ['f8','f8']
-#dtype = dict(names = names, formats=formats)
-#array = np.array(list(var_to_test.items()), dtype=dtype)
-
-#print(repr(array))
 
 
 
@@ -200,9 +191,7 @@ def get_date(base_dir):
         new_time.append(date + " " + time)
     return new_time
 
-        #for i in range(len(main_dic.keys())):
-    #dict_final.update({datetime_key:content})
-    # VEL -- [21762:21879]
+
 
 def get_vvel(base_dir):
     """This function gives you the values of all Velocity at 100m height as pandas data frame
@@ -216,8 +205,6 @@ def get_vvel(base_dir):
         content.append(np.fromfile(file_path, dtype=np.float32)[21762:21879])
 
     return pd.DataFrame(data=content)
-
-# Graphical
 
 
 def plotting_feature_importance(importance, model):
@@ -296,3 +283,4 @@ def drawing_map(result_point, radio=False, distance=False):
     folium.Marker(result_point, popup='<i>Result</i>', tooltip=tooltip).add_to(m)
 
     return m
+
