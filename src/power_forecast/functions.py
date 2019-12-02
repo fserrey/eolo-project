@@ -48,6 +48,21 @@ def get_variables(base_dir, var_list, diccionario, nz=26):
   
   return lst
 
+
+def setup_x(dataframe):
+  """Flat variables values for model training"""
+  dataframe.reset_index(level=0, inplace=True)
+  row_list =[] 
+  for index, rows in dataframe.iterrows(): 
+      my_list = [rows.RHprs, rows.Velprs, rows.TMPprs, rows.Vel100m, rows.Vel80m,rows.TMPsfc, rows.SPFH80m]
+      row_list.append(my_list) 
+
+  a = [np.concatenate(row_list[i]) for i in range(len(row_list))]
+  train_ = pd.DataFrame(a, index=dataframe["index"])
+  return train_
+
+
+
 def get_var(main_dic, list_var, nz=26):
     """This function provides the selected variables in a nested dictionary with the given array
     and level (consider that each level is around 50m heigth). Output is given as dictionary
