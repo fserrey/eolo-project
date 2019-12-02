@@ -1,39 +1,48 @@
-import os
-from os import listdir
-import numpy as np
-import pandas as pd
-from datetime import datetime, timedelta
-import json
-import folium
-import matplotlib.pyplot as plt
-from sklearn.model_selection import train_test_split
-from src.functions import loading, get_var, setting_X, setting_y
-from sklearn.ensemble import RandomForestRegressor
-from src.functions import *
-import pickle
-from src.pickle_save_load import to_pickle
-import webbrowser
+from power_forecast.functions import *
 
-# Data loading and pre-processing
+# Data loading 
 print("Reading the data...")
 base_dir = '/home/slimbook/git-repos/eolo-project/data/.raw/GFS_data'
-csv_path = ("/home/slimbook/git-repos/eolo-project/data/processed/power_data.csv")
+power_csv = "/home/slimbook/git-repos/eolo-project/data/processed/power_data.csv"
+gfs_dict_path = '/home/slimbook/git-repos/eolo-project/data/processed/gfs_info.json'
 
-df_data = get_vvel(base_dir)
-dates = get_date(base_dir)
-df_data.index = dates
+with open(gfs_dict_path, 'r', encoding='utf-8') as data_file:    
+    gfs_data_dict = json.load(data_file)
 
-print("We are almost ready to train!")
+# Selection of variables and pre-processing
+list_var = ["RHprs", "Velprs", "TMPprs", "Vel100m","Vel80m", "TMPsfc", "SPFH80m"]
 
-# Making X and y for machine learning training funnel
+lista_dates = get_date(base_dir)
+variables_ready = get_variables(base_dir, list_var, gfs_data_dict, nz=5)
 
-meteo = get_X(df_data) # Data obtained from previous pre-processing
-power = setting_y(csv_path) # Data from wind farm power station
+df_gfs = pd.DataFrame(data=variables_ready, index=lista_dates, columns=list_var)
+df_power = pd.read_csv(power_csv)
+df_power['date'] =  pd.to_datetime(df_power['date'], format='%d/%m/%Y %H:%M')
+df_power = df_power.set_index("date")
 
-train = pd.concat([power, meteo], axis=1, join="inner")
-train.sort_index(ascending=True, inplace=True) # We must sort index in order to later filter by date
+df_gfs.sort_index(axis=0, level=None, ascending=True, inplace=True)
+df_gfs.loc[:'31/12/2016 00:00']
+df_power.sort_index(axis=0, level=None, ascending=True, inplace=True)
+df_power.loc[:'31/12/2016 00:00']
 
-print("Let's find that wind farm")
+# Data preparation for model train
+trained = df_power.merge(df_gfs, left_index=True, right_index=True) # df intersection based on dates
+
+X = trained[[x for x in train.columns if x != 'Production']]
+y = pd.DataFrame(trained["Production"])
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state=42)
+
+
+
+
+
+
+
+
+
+
+
 X = train[[x for x in train.columns if x != 'Production']]
 y = pd.DataFrame(train["Production"])
 

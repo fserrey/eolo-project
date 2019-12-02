@@ -9,6 +9,11 @@ import xgboost as xgb
 import matplotlib as plt
 import folium
 
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestRegressor
+#from power_forecast.pickle_save_load import to_pickle
+import webbrowser
+
 
 def get_date(base_dir):
     new_time = []
@@ -125,8 +130,6 @@ def objetivo(space):
     rmse = mean_squared_error(y_test, y_pred)**(0.5)
 
     return {'loss':rmse, 'status': STATUS_OK }
-
-
 
 
 def get_vvel(base_dir):

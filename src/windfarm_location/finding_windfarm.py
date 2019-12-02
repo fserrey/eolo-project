@@ -7,11 +7,11 @@ import json
 import folium
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
-from src.functions import loading, get_var, setting_X, setting_y
+from windfarm_location.functions import loading, get_var, setting_X, setting_y
 from sklearn.ensemble import RandomForestRegressor
-from src.functions import *
+from windfarm_location.functions import *
 import pickle
-from src.pickle_save_load import to_pickle
+from windfarm_location.pickle_save_load import to_pickle
 import webbrowser
 
 # Data loading and pre-processing
