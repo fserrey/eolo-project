@@ -1,4 +1,12 @@
-from power_forecast.functions import *
+from functions import *
+
+# Modeling
+import lightgbm as lgb
+import xgboost as xgb
+from sklearn.ensemble import RandomForestRegressor
+
+# Evaluation of the model
+from sklearn.model_selection import train_test_split
 
 # Data loading 
 print("Reading the data...")
@@ -36,5 +44,53 @@ y = pd.DataFrame(trained["Production"])
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state=42)
 
 
+# specify your configurations as a dict
+params = {
+    'boosting_type': 'gbdt',
+    'objective': 'binary',
+    'metric': 'binary_logloss',
+    'num_leaves': 31,
+    'learning_rate': 0.05,
+    'feature_fraction': 0.9,
+    'bagging_fraction': 0.8,
+    'bagging_freq': 5,
+    'verbose': 0
+}
+
+
+#XGBRegressor
+boost_params = {'eval_metric': 'rmse'}
+xgb0 = xgb.XGBRegressor(
+    max_depth=8,
+    learning_rate=0.1,
+    n_estimators=1000,
+    objective='reg:linear',
+    gamma=0,
+    min_child_weight=1,
+    subsample=1,
+    colsample_bytree=1,
+    scale_pos_weight=1,
+    seed=27,
+    **boost_params)
+
+#LGBMRegressor
+gbm0 = lgb.LGBMRegressor(
+    objective='regression',
+    num_leaves=60,
+    learning_rate=0.1,
+    n_estimators=1000)
+
+
+print("Fitting XGBRegressor model...")
+xboost_fit = xgb0.fit(X_train, y_train)
+print("Finished fitting XGBRegressor model")
+
+print("Fitting LGBMRegressor model...")
+gbm_fit = gbm0.fit(X_train, y_train, eval_metric='rmse')
+print("Finished fitting LGBMRegressor model")
+
+# Prediction
+predict_lightGBM = gbm0.predict(X_test)
+predict_XGB = xgb0.predict(X_test)
 
 # W.I.P
